@@ -1,0 +1,177 @@
+--- Prompt 1 ---
+Write each prompt I send to you into a file prompts.txt, so I can audit the
+work.
+
+--- Prompt 2 ---
+scan CLAUDE.md and cross_platform.md
+
+--- Prompt 3 ---
+Let's work on the next step with db and migration layer first. Create and run the new supabase migration that adds vote_value + updates the features_with_votes view (upvotes/downvotes/score)
+
+--- Prompt 4 ---
+Hey Claude — I'm building a Feature Voting System using Supabase where users can post a feature request and upvote other features.
+
+--- Prompt 5 ---
+Fix Supabase import in Expo Router project. Getting "Cannot find module '../src/lib/supabase'" from app/(tabs)/index.tsx. Supabase client is at src/lib/supabase.ts. Clean fix using TS path alias so import is "@/src/lib/supabase". Update tsconfig.json with baseUrl ".", update the broken import, scan for other bad imports, report changes and verify commands.
+
+--- Changes Made (Prompt 5) ---
+1. VotingSystem/tsconfig.json — added "baseUrl": "."
+2. VotingSystem/app/(tabs)/index.tsx — changed import from '../../src/lib/supabase' to '@/src/lib/supabase'
+No other files had bad Supabase imports.
+
+ I want to keep it simple and skip Supabase Auth: the app will generate a stable voter_id UUID once, store it locally, and send it with requests. Can you design the minimal Supabase schema that supports creating a feature, listing features with vote counts, and upvoting a feature, while enforcing "one vote per feature per voter_id" directly in the database with a unique constraint? Please generate a single migration SQL file I can run via Supabase migrations (so it should be idempotent and safe to re-run, using create table if not exists, create index if not exists, etc.). It should create public.features and public.votes, include timestamps, basic validation (title length 3–120, description optional but capped), indexes for fast listing and vote counting, and include either a view or a clean query pattern that returns features with a vote_count. Output only the SQL with no explanation. we are planning only at this point create a Task.md file and we will work on that.
+
+--- Prompt 6 ---
+Reddit-style voting plan. Features have title (required) + description (required). Upvote (+1) / downvote (-1). Single votes table with vote_value constrained to +1/-1, unique (feature_id, voter_id). Clear vote = delete row, switch vote = upsert/update. View with upvotes_count, downvotes_count, score, sorted by score desc then created_at desc. TS data layer plan in src/lib/features.ts with types and functions. UI behavior spec for vote arrows. Planning only, no implementation.
+
+--- Prompt 7 ---
+Update Task.md to reflect the current Reddit-style voting plan so we can track implementation.
+
+--- Prompt 8 ---
+check for phase 2 implementation
+
+--- Prompt 9 ---
+pahase 1 I meant
+
+--- Prompt 10 ---
+OK let's look at task.Md and then work on phase two it should be the that we're implementing a hook use voter ID that generates a stable UUID on first launch and this should persist with async storage we also the screen to return voter ID and loading so screens can wait before making API calls
+
+--- Prompt 11 ---
+OK you are the reviewer prompt First thing is to verify the acceptance criteria point out likely bugs and edge cases and then give me a small checklist that I can look through give me exact prompts to validate the web and android
+
+--- Prompt 12 ---
+OK let's continue on with phase three umm this is going to be the data layer
+
+--- Prompt 13 ---
+OK Now that phase three is all finished let's work on phase four now this is building the home screen UI layer that calls phase three functions and renders the list
+
+--- Prompt 14 ---
+Claude, I'm getting this runtime crash during Phase 4: "Uncaught Error: Got unexpected undefined". This usually happens when a component branch, FlatList `data`, `renderItem`, or `keyExtractor` returns undefined.
+
+--- Prompt 15 ---
+[screenshot] Server Error / Got unexpected undefined / processTicksAndRejections / node:internal/process/task_queues
+
+--- Prompt 16 ---
+OK looks like Phase 4 is completed and it looks really good let's work on Phase 5 UI
+
+--- Prompt 17 ---
+[screenshot] Phase 5 UI bug — web shows "Failed to load features", Android shows blank white screen. Both pages not loading, might be navigation change.
+
+--- Prompt 18 ---
+Supabase CLI login issue — can't log into the email where the project was created. Asked for alternative approach to apply migrations without the CLI.
+
+--- Prompt 19 ---
+Ran both migrations in SQL editor. Asked to verify everything works. Found RLS blocking inserts — created migration 20260303000002_rls_policies.sql with open policies for anon access. Waiting for user to run it in Dashboard SQL Editor.
+
+--- Prompt 20 ---
+User ran RLS migration. Re-ran verify script — 10/10 passed. Schema fully verified against live Supabase. Cleaned up verify-schema.ts.
+
+--- Prompt 21 ---
+Track every prompt after this prompt and then put it into prompts TXT and continue with the tracking
+
+--- Prompt 22 ---
+Read CLAUDE.md and cross_platform.md and then after done reading that let's work on phase six and start implementing that
+
+--- Prompt 23 ---
+OK looks like the Create Feature screen button does work really well it looks like it's actually not connected directly to the database when we create A New feature I just tried to create a test 1 and it didn't go through can you verify and check to make sure if that is implemented correctly
+
+--- Prompt 24 ---
+OK looks like it actually did load when I tried to create a feature Can we change it to where umm we don't have to reload the page every single time we create a new feature
+
+--- Prompt 25 ---
+OK let's start the cross platform verification for Phase 7 Get back with me if you need any help deciding any really big changes or features that you're going to make
+
+--- Prompt 26 ---
+It looks like we're not getting the same page loaded in on the website as we are the mobile looks like the website looks completely fine it looks like it's working but the mobile we have a white screen can you look into that for us
+
+--- Prompt 27 ---
+OK looks like it's still not working can you check some of the files especially the folders within app and see why it not be might not be working maybe we're using the a wrong layout dot TSX and if if we're not using some specific files within app can you actually go ahead and delete them I know some of this is the boilerplate for from Expo so if there's anything from Expo that isn't what we're using can you go ahead and clear that up so we can make the files look a lot neater so we don't get confused
+
+--- Prompt 28 ---
+[screenshot: mobile still blank white screen with Home/Explore tabs at bottom; screenshot: web working perfectly with Feature Requests list] I just gave you two images one is of the mobile app and then one is of the web page can you figure out why the mobile app is still just a blank screen I can't figure out what seems to be a problem here
+
+--- Prompt 29 ---
+It still looks like we're having the mobile app problem even though I cleared the cache Can you do a deeper dive into why the mobile app looks different and doesn't load the same as the web page
+
+--- Prompt 30 ---
+OK it looks like the mobile app isn't even loading up the same page can you check that it's still loading the right page umm it looks like we still have the home and Explorer default landing pages from Expo from the boilerplate can you figure out why that's happening and what's going on
+
+--- Prompt 31 ---
+OK I went through most of the layouts we're still getting an app loading error or is not an error we're just loading a white page when our web page loads perfectly fine can you figure out what this is happening. [screenshot: Metro bundler logs showing Android bundle completes successfully at 5423ms, web bundles also complete, no errors visible]
+
+--- Changes Made (Prompt 31) ---
+Fixed white screen on Android by adding explicit SplashScreen.hideAsync() to app/_layout.tsx.
+
+--- Prompt 32 ---
+OK looks like it all works let's work on Phase number eight with the tests
+
+--- Changes Made (Prompt 32) ---
+1. Installed jest-expo, @testing-library/react-native, @types/jest, react-test-renderer
+2. Created jest.config.js with jest-expo preset, path alias mapping, transform ignore patterns
+3. Created jest.setup.js with global Supabase mock
+4. Added "test": "jest" script to package.json
+5. Created 4 test files (36 tests total, all passing):
+   - src/lib/__tests__/applyVoteOptimistically.test.ts (8 tests)
+   - src/lib/__tests__/features.test.ts (13 tests)
+   - src/hooks/__tests__/useVoterId.test.ts (4 tests)
+   - components/__tests__/FeatureCard.test.tsx (11 tests)
+
+--- Prompt 33 ---
+I don't want to build out any new features could you actually just make the page look like this [screenshot: dark-themed Reddit/devthread-style feed with vote arrows on left, dark cards, teal accents]
+
+--- Changes Made (Prompt 33) ---
+Restyled entire app to dark theme matching screenshot. No new features added.
+1. app/_layout.tsx — forced dark theme with custom colors (#0E0E12 bg, #12121A card, #10B981 accent), light status bar, styled modal header
+2. components/FeatureCard.tsx — restructured card layout: vote column (up/score/down) on LEFT, content on RIGHT. Dark card bg (#16161E), subtle border, teal upvote/red downvote colors, added formatScore helper for 1k+ display
+3. app/index.tsx — dark background, dark header, teal "+ New Post" pill button, teal refresh indicator
+4. app/create.tsx — dark form: dark inputs (#1E1E28), dark labels, teal submit button, matching error colors
+All 36 tests still passing.
+
+--- Prompt 34 ---
+OK can we change the background for the Android it looks like the background is not the same as the background for the web app just make sure they're both darker backgrounds you can go and copy whatever color you use for the web app
+
+--- Changes Made (Prompt 34) ---
+Set Android background to match web: app.json android.backgroundColor, SystemUI.setBackgroundColorAsync, Stack contentStyle, splash screen background all set to #0E0E12.
+
+--- Prompt 35 ---
+Here I pasted one image of the mobile app and one image of the web page umm can you figure out why the mobile app has a different color background compared to the web app [screenshots: mobile slightly lighter than web]
+
+--- Changes Made (Prompt 35) ---
+Added android.backgroundColor to app.json and contentStyle on Stack in _layout.tsx.
+
+--- Prompt 36 ---
+OK let's just change both the backgrounds to something way darker and could you add a settings button and then within that settings button let's add a dark mode and a light mode button and then make sure that button works
+
+--- Changes Made (Prompt 36) ---
+1. NEW: src/theme/colors.ts — AppColors type with darkColors (#0A0A0E bg) and lightColors (#F5F5F7 bg) palettes
+2. NEW: src/theme/ThemeContext.tsx — React Context (AppThemeProvider + useAppTheme hook) with persisted preference via AsyncStorage/localStorage
+3. NEW: app/settings.tsx — Settings modal with dark/light Switch toggle
+4. MODIFIED: app/_layout.tsx — Wraps app in AppThemeProvider, dynamic nav theme, StatusBar, SystemUI background, settings route
+5. MODIFIED: app/index.tsx — All colors from useAppTheme(), settings gear button in header
+6. MODIFIED: app/create.tsx — All colors from useAppTheme()
+7. MODIFIED: components/FeatureCard.tsx — All colors from useAppTheme()
+8. MODIFIED: components/__tests__/FeatureCard.test.tsx — Wrapped renders in AppThemeProvider
+9. MODIFIED: jest.setup.js — Global localStorage polyfill for test env
+10. MODIFIED: app.json — All backgrounds set to #0A0A0E
+All 36 tests passing.
+
+--- Prompt 37 ---
+Can we go ahead and move the settings button to the right side of the new post button and let's get rid of the testing features and put in some random AI machine learning LLM topics with mock upvotes and downvotes
+
+--- Changes Made (Prompt 37) ---
+1. MODIFIED: app/index.tsx — Swapped button order: "+ New Post" now left, settings gear now right
+2. NEW: supabase/seed_mock_data.sql — Clears test data, inserts 10 AI/ML/LLM topics with realistic vote distributions (600+ mock votes total). Run in Supabase SQL Editor.
+
+--- Prompt 38 ---
+Add console logging for every upvote, downvote, and feature creation. Console.log only, no database storage. Update Task.md with this as a new phase.
+
+--- Changes Made (Prompt 38) ---
+1. MODIFIED: app/index.tsx — Added console.log in handleVote: logs direction (UPVOTE/DOWNVOTE/CLEAR), feature ID, voter ID
+2. MODIFIED: app/create.tsx — Added console.log in handleSubmit: logs title and voter ID on attempt and success
+3. MODIFIED: Task.md — Added Phase 9: User Action Logging
+
+--- Prompt 39 ---
+No back button on Create or Settings screens. Can't return to home screen. Need it working on both web and mobile.
+
+--- Changes Made (Prompt 39) ---
+1. MODIFIED: app/_layout.tsx — Added explicit headerLeft close button (✕) on both "create" and "settings" modal screens using router.back(). Works cross-platform (web + Android).
