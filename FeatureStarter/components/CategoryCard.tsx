@@ -1,15 +1,8 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import type { Category } from '@/src/lib/categories';
 import { useAppTheme } from '@/src/theme/ThemeContext';
 
-export type Category = {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  icon_color: string;
-  created_at: string;
-};
+export type { Category };
 
 type Props = {
   category: Category;
@@ -25,13 +18,11 @@ export function CategoryCard({ category, onPress }: Props) {
       accessibilityLabel={category.name}
       style={[styles.card, { backgroundColor: colors.cardAlt, borderColor: colors.border }]}
     >
-      <View style={[styles.iconContainer, { backgroundColor: category.icon_color + '33' }]}>
-        <MaterialIcons
-          name={category.icon as 'star'}
-          size={26}
-          color={category.icon_color}
-        />
-      </View>
+      <Image
+        source={{ uri: category.image }}
+        style={styles.image}
+        resizeMode="cover"
+      />
       <View style={styles.content}>
         <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
           {category.name}
@@ -42,7 +33,6 @@ export function CategoryCard({ category, onPress }: Props) {
           </Text>
         ) : null}
       </View>
-      <MaterialIcons name="chevron-right" size={22} color={colors.textMuted} />
     </Pressable>
   );
 }
@@ -50,22 +40,18 @@ export function CategoryCard({ category, onPress }: Props) {
 const styles = StyleSheet.create({
   card: {
     borderRadius: 8,
-    borderWidth: 1.5,
+    borderWidth: 1,
     marginHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    gap: 12,
+    overflow: 'hidden',
   },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+  image: {
+    width: '100%',
+    height: 100,
   },
-  content: { flex: 1 },
-  name: { fontSize: 15, fontWeight: '600', marginBottom: 2 },
-  description: { fontSize: 13, lineHeight: 18 },
+  content: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+  },
+  name: { fontSize: 14, fontWeight: '600', marginBottom: 2 },
+  description: { fontSize: 12, lineHeight: 16 },
 });

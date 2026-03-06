@@ -7,13 +7,13 @@
     "icon": "./assets/images/icon.png",
     "scheme": "featurestarter",
     "userInterfaceStyle": "dark",
-    "backgroundColor": "#0A0A0E",
+    "backgroundColor": "#09090B",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
-      "backgroundColor": "#0A0A0E",
+      "backgroundColor": "#09090B",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -35,7 +35,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#0A0A0E"
+          "backgroundColor": "#09090B"
         }
       ]
     ],

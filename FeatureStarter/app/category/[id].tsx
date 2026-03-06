@@ -17,10 +17,15 @@ import { FeatureCard } from '@/components/FeatureCard';
 import {
   applyVoteOptimistically,
   fetchFeatures,
+  filterFeaturesByStatus,
+  sortFeatures,
   voteFeature,
+  type FeatureStatus,
   type FeatureWithVotes,
+  type SortOption,
   type VoteValue,
 } from '@/src/lib/features';
+import { SortFilterBar } from '@/components/SortFilterBar';
 import { useVoterId } from '@/src/hooks/useVoterId';
 import { useAppTheme } from '@/src/theme/ThemeContext';
 
@@ -35,6 +40,10 @@ export default function CategoryScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sortOption, setSortOption] = useState<SortOption>('most_voted');
+  const [filterStatus, setFilterStatus] = useState<FeatureStatus | null>(null);
+
+  const displayedFeatures = sortFeatures(filterFeaturesByStatus(features, filterStatus), sortOption);
 
   useEffect(() => {
     navigation.setOptions({ title: name ?? 'Features' });
@@ -115,7 +124,7 @@ export default function CategoryScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['bottom']}>
       <FlatList
-        data={features ?? []}
+        data={displayedFeatures}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <FeatureCard item={item} onVote={handleVote} />}
         refreshControl={
@@ -127,14 +136,22 @@ export default function CategoryScreen() {
           />
         }
         ListHeaderComponent={
-          <View style={styles.listHeader}>
-            <Pressable
-              onPress={() => router.push({ pathname: '/create', params: { categoryId: id } })}
-              style={[styles.addButton, { backgroundColor: colors.primary }]}
-              accessibilityLabel="Submit a new feature request"
-            >
-              <Text style={[styles.addButtonText, { color: colors.onPrimary }]}>+ New Post</Text>
-            </Pressable>
+          <View>
+            <View style={styles.listHeader}>
+              <Pressable
+                onPress={() => router.push({ pathname: '/create', params: { categoryId: id } })}
+                style={[styles.addButton, { backgroundColor: colors.primary }]}
+                accessibilityLabel="Submit a new feature request"
+              >
+                <Text style={[styles.addButtonText, { color: colors.onPrimary }]}>+ New Post</Text>
+              </Pressable>
+            </View>
+            <SortFilterBar
+              activeSort={sortOption}
+              activeFilter={filterStatus}
+              onSortChange={setSortOption}
+              onFilterChange={setFilterStatus}
+            />
           </View>
         }
         ListEmptyComponent={
@@ -149,7 +166,7 @@ export default function CategoryScreen() {
         }
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={
-          features.length === 0
+          displayedFeatures.length === 0
             ? [styles.listContent, styles.listEmpty]
             : styles.listContent
         }
@@ -167,11 +184,11 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     alignItems: 'flex-end',
   },
-  addButton: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
+  addButton: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20 },
   addButtonText: { fontSize: 14, fontWeight: '700' },
   listContent: { paddingVertical: 10, width: '100%', maxWidth: 672, alignSelf: 'center' },
   listEmpty: { flexGrow: 1 },
-  separator: { height: 8 },
+  separator: { height: 10 },
   emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 80 },
   emptyText: { fontSize: 16, fontWeight: '600' },
   emptySubtext: { fontSize: 14, marginTop: 4 },

@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -12,18 +12,17 @@ import { AppThemeProvider, useAppTheme } from '@/src/theme/ThemeContext';
 SplashScreen.preventAutoHideAsync();
 
 function InnerLayout() {
-  const { mode, colors } = useAppTheme();
+  const { colors } = useAppTheme();
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(colors.background);
     SplashScreen.hideAsync();
   }, [colors.background]);
 
-  const baseTheme = mode === 'dark' ? DarkTheme : DefaultTheme;
   const navTheme = {
-    ...baseTheme,
+    ...DarkTheme,
     colors: {
-      ...baseTheme.colors,
+      ...DarkTheme.colors,
       background: colors.background,
       card: colors.card,
       border: colors.border,
@@ -62,18 +61,8 @@ function InnerLayout() {
             headerLeft: closeButton,
           }}
         />
-        <Stack.Screen
-          name="settings"
-          options={{
-            presentation: 'modal',
-            title: 'Settings',
-            headerStyle: { backgroundColor: colors.card },
-            headerTintColor: colors.text,
-            headerLeft: closeButton,
-          }}
-        />
       </Stack>
-      <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style="light" />
     </ThemeProvider>
   );
 }

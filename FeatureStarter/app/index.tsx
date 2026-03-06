@@ -12,8 +12,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
 import { CategoryCard } from '@/components/CategoryCard';
 import { fetchCategories, type Category } from '@/src/lib/categories';
 import { useAppTheme } from '@/src/theme/ThemeContext';
@@ -87,13 +85,6 @@ export default function HomeScreen() {
       <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
         <View style={styles.headerInner}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>Browse Categories</Text>
-          <Pressable
-            onPress={() => router.push('/settings')}
-            style={styles.settingsButton}
-            accessibilityLabel="Settings"
-          >
-            <MaterialIcons name="settings" size={22} color={colors.textMuted} />
-          </Pressable>
         </View>
         <View style={styles.searchRow}>
           <TextInput
@@ -101,7 +92,7 @@ export default function HomeScreen() {
               styles.searchInput,
               {
                 borderWidth: 1,
-                borderRadius: 8,
+                borderRadius: 10,
                 paddingHorizontal: 12,
                 paddingVertical: 10,
                 backgroundColor: colors.inputBg,
@@ -151,7 +142,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
-  header: { borderBottomWidth: 1.5 },
+  header: { borderBottomWidth: 1 },
   headerInner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -162,8 +153,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
-  headerTitle: { fontSize: 20, fontWeight: '700' },
-  settingsButton: { padding: 6 },
+  headerTitle: { fontSize: 18, fontWeight: '600' },
   searchRow: {
     paddingHorizontal: 16,
     paddingBottom: 12,
@@ -178,6 +168,6 @@ const styles = StyleSheet.create({
   emptyContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 80 },
   emptyText: { fontSize: 16, fontWeight: '600' },
   errorText: { fontSize: 15, textAlign: 'center', marginBottom: 16 },
-  retryButton: { paddingHorizontal: 24, paddingVertical: 10, borderRadius: 8 },
+  retryButton: { paddingHorizontal: 24, paddingVertical: 10, borderRadius: 10 },
   retryText: { fontWeight: '600', fontSize: 15 },
 });

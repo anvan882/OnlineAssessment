@@ -17,7 +17,9 @@ function makeItem(overrides: Partial<FeatureWithVotes> = {}): FeatureWithVotes {
     id: 'f1',
     title: 'Test Feature',
     description: 'A test description',
+    status: 'requested',
     voter_id: 'v1',
+    category_id: 'cat-1',
     created_at: '2026-01-01T00:00:00Z',
     upvotes_count: 5,
     downvotes_count: 2,
@@ -118,6 +120,20 @@ describe('FeatureCard', () => {
     await waitFor(() => expect(getByLabelText('Upvote')).toBeTruthy());
     expect(() => fireEvent.press(getByLabelText('Upvote'))).not.toThrow();
     expect(() => fireEvent.press(getByLabelText('Downvote'))).not.toThrow();
+  });
+
+  it('renders status badge', async () => {
+    const { getByText } = renderCard(
+      <FeatureCard item={makeItem({ status: 'shipped' })} />
+    );
+    await waitFor(() => expect(getByText('Shipped')).toBeTruthy());
+  });
+
+  it('renders status badge for in_progress', async () => {
+    const { getByText } = renderCard(
+      <FeatureCard item={makeItem({ status: 'in_progress' })} />
+    );
+    await waitFor(() => expect(getByText('In Progress')).toBeTruthy());
   });
 
   it('handles null/undefined counts gracefully', async () => {

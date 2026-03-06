@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { MOCK_CATEGORIES } from './mockData';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -6,8 +6,7 @@ export type Category = {
   id: string;
   name: string;
   description: string;
-  icon: string;
-  icon_color: string;
+  image: string;
   created_at: string;
 };
 
@@ -15,13 +14,8 @@ export type Category = {
 
 /**
  * Fetch all categories ordered alphabetically by name.
+ * Currently returns mock data.
  */
 export async function fetchCategories(): Promise<Category[]> {
-  const { data, error } = await supabase
-    .from('categories')
-    .select('*')
-    .order('name');
-
-  if (error) throw error;
-  return data ?? [];
+  return [...MOCK_CATEGORIES].sort((a, b) => a.name.localeCompare(b.name));
 }
