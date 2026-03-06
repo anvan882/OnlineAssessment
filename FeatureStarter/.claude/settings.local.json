@@ -1,9 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/Users/annis/dev/MetaCTO-OA/OnlineAssessment/**)",
+      "Read(**)",
+      "Edit(**)",
+      "Write(**)",
       "Bash(mv VotingSystem FeatureStarter)",
-      "Bash(npx jest:*)"
+      "Bash(npx jest:*)",
+      "Bash(npx tsc:*)",
+      "Bash(node:*)",
+      "Bash(claude mcp:*)",
+      "Bash(npx supabase:*)",
+      "Bash(git:*)",
+      "Bash(echo exit: $?:*)"
     ]
   }
 }
