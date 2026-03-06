@@ -46,3 +46,6 @@
 ## P9 – Final Polish
 38. Phase 9 — Console logging for votes and feature creation (temporary, no DB)
 39. Added ✕ close button on Create/Settings modals (headerLeft, cross-platform)
+
+## P10 – Loom Video Prep
+40. Generated 5-minute Loom walkthrough script: design decisions, trade-offs, future improvements, screen-by-screen guide

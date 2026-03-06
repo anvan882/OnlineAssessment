@@ -1,5 +1,3 @@
-For each prompt I give you, write to a file prompts.txt, so I can audit the work.
-
 Using React Native with Expo.
 
 The developer has little to no prior React Native experience, and the project needs to work cross-platform
