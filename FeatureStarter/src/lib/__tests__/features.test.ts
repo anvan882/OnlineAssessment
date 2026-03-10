@@ -1,4 +1,4 @@
-import { fetchFeatures, createFeature, voteFeature } from '../features';
+import { fetchFeatures, createFeature, voteFeature, fetchFeatureById, fetchTrendingFeatures } from '../features';
 import { MOCK_FEATURES } from '../mockData';
 
 describe('fetchFeatures', () => {
@@ -30,6 +30,13 @@ describe('fetchFeatures', () => {
     }
   });
 
+  it('each feature has a rationale field', async () => {
+    const result = await fetchFeatures('voter-1', 'cat-1');
+    for (const f of result) {
+      expect(typeof f.rationale).toBe('string');
+    }
+  });
+
   it('each feature has a valid status field', async () => {
     const result = await fetchFeatures('voter-1', 'cat-1');
     const validStatuses = ['requested', 'in_progress', 'shipped'];
@@ -57,6 +64,84 @@ describe('voteFeature', () => {
 
   it('resolves for downvote', async () => {
     await expect(voteFeature('f1', 'v1', -1)).resolves.toBeUndefined();
+  });
+
+  it('persists upvote in MOCK_FEATURES', async () => {
+    const before = await fetchFeatureById('v1', 'f1-1');
+    const originalUp = before!.upvotes_count;
+    const originalVote = before!.my_vote;
+
+    await voteFeature('f1-1', 'v1', 1);
+
+    const after = await fetchFeatureById('v1', 'f1-1');
+    expect(after!.upvotes_count).toBe(originalUp + 1);
+    expect(after!.my_vote).toBe(1);
+
+    // Clean up: revert the vote
+    await voteFeature('f1-1', 'v1', originalVote);
+  });
+});
+
+describe('fetchTrendingFeatures', () => {
+  it('returns at most the requested limit', async () => {
+    const result = await fetchTrendingFeatures('v1', 5);
+    expect(result.length).toBeLessThanOrEqual(5);
+  });
+
+  it('returns fewer items when limit exceeds total features', async () => {
+    const result = await fetchTrendingFeatures('v1', 9999);
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  it('results are sorted by engagement descending', async () => {
+    const result = await fetchTrendingFeatures('v1', 10);
+    for (let i = 1; i < result.length; i++) {
+      const prev = result[i - 1].upvotes_count + result[i - 1].downvotes_count;
+      const curr = result[i].upvotes_count + result[i].downvotes_count;
+      expect(prev).toBeGreaterThanOrEqual(curr);
+    }
+  });
+
+  it('returns new object references', async () => {
+    const a = await fetchTrendingFeatures('v1', 3);
+    const b = await fetchTrendingFeatures('v1', 3);
+    expect(a[0]).not.toBe(b[0]);
+  });
+
+  it('returns 0 items when limit is 0', async () => {
+    const result = await fetchTrendingFeatures('v1', 0);
+    expect(result).toEqual([]);
+  });
+});
+
+describe('fetchFeatureById', () => {
+  it('returns a feature when id exists', async () => {
+    const result = await fetchFeatureById('voter-1', 'f1-1');
+    expect(result).not.toBeNull();
+    expect(result?.id).toBe('f1-1');
+  });
+
+  it('returns null for unknown id', async () => {
+    const result = await fetchFeatureById('voter-1', 'does-not-exist');
+    expect(result).toBeNull();
+  });
+
+  it('returns a new object reference (not original)', async () => {
+    const a = await fetchFeatureById('voter-1', 'f1-1');
+    const b = await fetchFeatureById('voter-1', 'f1-1');
+    expect(a).not.toBe(b);
+  });
+
+  it('returned feature has all required fields', async () => {
+    const result = await fetchFeatureById('voter-1', 'f2-3');
+    expect(result).not.toBeNull();
+    if (!result) return;
+    expect(typeof result.title).toBe('string');
+    expect(typeof result.description).toBe('string');
+    expect(typeof result.score).toBe('number');
+    expect(typeof result.upvotes_count).toBe('number');
+    expect(typeof result.downvotes_count).toBe('number');
+    expect(['requested', 'in_progress', 'shipped']).toContain(result.status);
   });
 });
 

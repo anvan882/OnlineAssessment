@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
 import { useEffect } from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
+import { Platform, Pressable, Text, StyleSheet } from 'react-native';
 import 'react-native-reanimated';
 
 import { AppThemeProvider, useAppTheme } from '@/src/theme/ThemeContext';
@@ -15,7 +15,9 @@ function InnerLayout() {
   const { colors } = useAppTheme();
 
   useEffect(() => {
-    SystemUI.setBackgroundColorAsync(colors.background);
+    if (Platform.OS !== 'web') {
+      SystemUI.setBackgroundColorAsync(colors.background);
+    }
     SplashScreen.hideAsync();
   }, [colors.background]);
 
@@ -49,6 +51,14 @@ function InnerLayout() {
             headerStyle: { backgroundColor: colors.card },
             headerTintColor: colors.text,
             title: '',
+          }}
+        />
+        <Stack.Screen
+          name="feature/[id]"
+          options={{
+            title: 'Feature Details',
+            headerStyle: { backgroundColor: colors.card },
+            headerTintColor: colors.text,
           }}
         />
         <Stack.Screen

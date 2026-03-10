@@ -17,6 +17,7 @@ function makeItem(overrides: Partial<FeatureWithVotes> = {}): FeatureWithVotes {
     id: 'f1',
     title: 'Test Feature',
     description: 'A test description',
+    rationale: 'Test rationale',
     status: 'requested',
     voter_id: 'v1',
     category_id: 'cat-1',
@@ -134,6 +135,21 @@ describe('FeatureCard', () => {
       <FeatureCard item={makeItem({ status: 'in_progress' })} />
     );
     await waitFor(() => expect(getByText('In Progress')).toBeTruthy());
+  });
+
+  it('calls onPress with feature id when card is pressed', async () => {
+    const onPress = jest.fn();
+    const { getByRole } = renderCard(
+      <FeatureCard item={makeItem({ id: 'f42' })} onPress={onPress} />
+    );
+    await waitFor(() => expect(getByRole('button')).toBeTruthy());
+    fireEvent.press(getByRole('button'));
+    expect(onPress).toHaveBeenCalledWith('f42');
+  });
+
+  it('does not crash when onPress is not provided', async () => {
+    const { getByText } = renderCard(<FeatureCard item={makeItem()} />);
+    await waitFor(() => expect(getByText('Test Feature')).toBeTruthy());
   });
 
   it('handles null/undefined counts gracefully', async () => {

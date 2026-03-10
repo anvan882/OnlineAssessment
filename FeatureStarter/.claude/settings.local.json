@@ -11,7 +11,9 @@
       "Bash(claude mcp:*)",
       "Bash(npx supabase:*)",
       "Bash(git:*)",
-      "Bash(echo exit: $?:*)"
+      "Bash(echo exit: $?:*)",
+      "Bash(npx expo export --platform web --no-minify 2>&1 | tail -20)",
+      "Bash(npx expo export --platform web --no-minify 2>&1 | tail -10)"
     ]
   }
 }

@@ -3,10 +3,12 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import type { FeatureWithVotes, VoteValue } from '@/src/lib/features';
 import { useAppTheme } from '@/src/theme/ThemeContext';
 import { StatusBadge } from './StatusBadge';
+import { timeAgo } from '@/src/lib/timeAgo';
 
 type Props = {
   item: FeatureWithVotes;
   onVote?: (featureId: string, nextVote: VoteValue) => void;
+  onPress?: (featureId: string) => void;
 };
 
 function formatScore(n: number): string {
@@ -14,7 +16,7 @@ function formatScore(n: number): string {
   return String(n);
 }
 
-export function FeatureCard({ item, onVote }: Props) {
+export function FeatureCard({ item, onVote, onPress }: Props) {
   const { colors } = useAppTheme();
 
   const upColor = item.my_vote === 1 ? colors.primary : colors.textMuted;
@@ -26,7 +28,11 @@ export function FeatureCard({ item, onVote }: Props) {
   const handleDown = () => onVote?.(item.id, item.my_vote === -1 ? 0 : -1);
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.cardAlt, borderColor: colors.border }]}>
+    <Pressable
+      onPress={onPress ? () => onPress(item.id) : undefined}
+      style={[styles.card, { backgroundColor: colors.cardAlt, borderColor: colors.border }]}
+      accessibilityRole={onPress ? 'button' : undefined}
+    >
       <View style={styles.voteColumn}>
         <Pressable onPress={handleUp} style={styles.voteButton} accessibilityLabel="Upvote">
           <MaterialIcons name="arrow-drop-up" size={28} color={upColor} />
@@ -50,9 +56,12 @@ export function FeatureCard({ item, onVote }: Props) {
           <Text style={[styles.voteCounts, { color: colors.textMuted }]}>
             {Number(item.upvotes_count ?? 0)}↑ · {Number(item.downvotes_count ?? 0)}↓
           </Text>
+          <Text style={[styles.timeAgo, { color: colors.textDimmed }]}>
+            {timeAgo(item.created_at)}
+          </Text>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -78,4 +87,5 @@ const styles = StyleSheet.create({
   description: { fontSize: 13, lineHeight: 19, marginBottom: 10 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   voteCounts: { fontSize: 12 },
+  timeAgo: { fontSize: 12, marginLeft: 'auto' },
 });

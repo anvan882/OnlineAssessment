@@ -13,6 +13,7 @@ export type Feature = {
   id: string;
   title: string;
   description: string;
+  rationale: string;
   status: FeatureStatus;
   voter_id: string;
   category_id: string;
@@ -53,6 +54,7 @@ export async function createFeature(input: CreateFeatureInput): Promise<Feature>
     id: `f-${Date.now()}-${nextId++}`,
     title: input.title,
     description: input.description,
+    rationale: '',
     status: 'requested',
     voter_id: input.voter_id,
     category_id: input.category_id,
@@ -61,14 +63,26 @@ export async function createFeature(input: CreateFeatureInput): Promise<Feature>
 }
 
 /**
- * Cast or clear a vote. Currently a no-op (optimistic UI handles display).
+ * Cast or clear a vote. Persists the vote in MOCK_FEATURES so re-fetches reflect it.
  */
 export async function voteFeature(
-  _featureId: string,
+  featureId: string,
   _voterId: string,
-  _voteValue: VoteValue
+  voteValue: VoteValue
 ): Promise<void> {
-  // No-op — optimistic update handles the UI
+  for (const features of Object.values(MOCK_FEATURES)) {
+    const feature = features.find((f) => f.id === featureId);
+    if (feature) {
+      const prev = feature.my_vote;
+      if (prev === 1) feature.upvotes_count -= 1;
+      if (prev === -1) feature.downvotes_count -= 1;
+      if (voteValue === 1) feature.upvotes_count += 1;
+      if (voteValue === -1) feature.downvotes_count += 1;
+      feature.my_vote = voteValue;
+      feature.score = feature.upvotes_count - feature.downvotes_count;
+      return;
+    }
+  }
 }
 
 /**
@@ -96,6 +110,50 @@ export function filterFeaturesByStatus(
 ): FeatureWithVotes[] {
   if (!status) return features;
   return features.filter((f) => f.status === status);
+}
+
+/**
+ * Fetch the top trending features across all categories.
+ * Trending = highest total engagement (upvotes + downvotes).
+ */
+export async function fetchTrendingFeatures(
+  _voterId: string,
+  limit = 5
+): Promise<FeatureWithVotes[]> {
+  const all = Object.values(MOCK_FEATURES).flat();
+  return [...all]
+    .sort((a, b) => (b.upvotes_count + b.downvotes_count) - (a.upvotes_count + a.downvotes_count))
+    .slice(0, limit)
+    .map((f) => ({ ...f }));
+}
+
+/**
+ * Fetch a single feature by ID across all categories.
+ * Returns null if not found.
+ */
+export async function fetchFeatureById(
+  _voterId: string,
+  featureId: string
+): Promise<FeatureWithVotes | null> {
+  for (const features of Object.values(MOCK_FEATURES)) {
+    const found = features.find((f) => f.id === featureId);
+    if (found) return { ...found };
+  }
+  return null;
+}
+
+/**
+ * Filter features by search query against title and description.
+ * If query is empty, return all.
+ */
+export function searchFeatures(features: FeatureWithVotes[], query: string): FeatureWithVotes[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return features;
+  return features.filter(
+    (f) =>
+      f.title.toLowerCase().includes(q) ||
+      f.description.toLowerCase().includes(q)
+  );
 }
 
 /**

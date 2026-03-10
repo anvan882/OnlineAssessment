@@ -1,6 +1,8 @@
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
 import {
+  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -23,6 +25,7 @@ const DESC_MAX = 500;
 
 export default function CreateScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const { categoryId } = useLocalSearchParams<{ categoryId?: string }>();
   const { colors } = useAppTheme();
   const { voterId, loading: voterLoading } = useVoterId();
@@ -33,6 +36,29 @@ export default function CreateScreen() {
   const [descError, setDescError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const isDirty = title.trim().length > 0 || description.trim().length > 0;
+
+  useEffect(() => {
+    return navigation.addListener('beforeRemove', (e) => {
+      if (!isDirty) return;
+      e.preventDefault();
+      if (Platform.OS === 'web') {
+        const discard = window.confirm('You have unsaved text. Leave without submitting?');
+        if (!discard) return;
+        navigation.dispatch(e.data.action);
+      } else {
+        Alert.alert(
+          'Discard changes?',
+          'You have unsaved text. Leave without submitting?',
+          [
+            { text: 'Keep editing', style: 'cancel' },
+            { text: 'Discard', style: 'destructive', onPress: () => navigation.dispatch(e.data.action) },
+          ]
+        );
+      }
+    });
+  }, [navigation, isDirty]);
 
   function validate(): boolean {
     let valid = true;

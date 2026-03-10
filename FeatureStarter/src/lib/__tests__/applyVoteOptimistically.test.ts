@@ -5,6 +5,7 @@ function makeFeature(overrides: Partial<FeatureWithVotes> = {}): FeatureWithVote
     id: 'f1',
     title: 'Test Feature',
     description: 'A test',
+    rationale: '',
     status: 'requested',
     voter_id: 'v1',
     category_id: 'cat-1',

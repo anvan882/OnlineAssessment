@@ -13,11 +13,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { CategoryListHeader } from '@/components/CategoryListHeader';
 import { FeatureCard } from '@/components/FeatureCard';
+import { Toast } from '@/components/Toast';
 import {
   applyVoteOptimistically,
   fetchFeatures,
   filterFeaturesByStatus,
+  searchFeatures,
   sortFeatures,
   voteFeature,
   type FeatureStatus,
@@ -25,7 +28,6 @@ import {
   type SortOption,
   type VoteValue,
 } from '@/src/lib/features';
-import { SortFilterBar } from '@/components/SortFilterBar';
 import { useVoterId } from '@/src/hooks/useVoterId';
 import { useAppTheme } from '@/src/theme/ThemeContext';
 
@@ -42,8 +44,15 @@ export default function CategoryScreen() {
   const [error, setError] = useState<string | null>(null);
   const [sortOption, setSortOption] = useState<SortOption>('most_voted');
   const [filterStatus, setFilterStatus] = useState<FeatureStatus | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const displayedFeatures = sortFeatures(filterFeaturesByStatus(features, filterStatus), sortOption);
+  const displayedFeatures = searchFeatures(
+    sortFeatures(filterFeaturesByStatus(features, filterStatus), sortOption),
+    searchQuery
+  );
 
   useEffect(() => {
     navigation.setOptions({ title: name ?? 'Features' });
@@ -57,6 +66,7 @@ export default function CategoryScreen() {
       try {
         const data = await fetchFeatures(voterId, id);
         setFeatures(data);
+        setLastUpdated(new Date());
       } catch (e) {
         const msg =
           e instanceof Error
@@ -86,8 +96,14 @@ export default function CategoryScreen() {
       );
       try {
         await voteFeature(featureId, voterId, nextVote);
+        if (nextVote !== 0) {
+          setToastType('success');
+          setToastMsg('Vote saved!');
+        }
       } catch {
         setFeatures(snapshot);
+        setToastType('error');
+        setToastMsg('Vote failed. Try again.');
       }
     },
     [voterId, features]
@@ -126,7 +142,13 @@ export default function CategoryScreen() {
       <FlatList
         data={displayedFeatures}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <FeatureCard item={item} onVote={handleVote} />}
+        renderItem={({ item }) => (
+          <FeatureCard
+            item={item}
+            onVote={handleVote}
+            onPress={(featureId) => router.push({ pathname: '/feature/[id]', params: { id: featureId } })}
+          />
+        )}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -136,23 +158,16 @@ export default function CategoryScreen() {
           />
         }
         ListHeaderComponent={
-          <View>
-            <View style={styles.listHeader}>
-              <Pressable
-                onPress={() => router.push({ pathname: '/create', params: { categoryId: id } })}
-                style={[styles.addButton, { backgroundColor: colors.primary }]}
-                accessibilityLabel="Submit a new feature request"
-              >
-                <Text style={[styles.addButtonText, { color: colors.onPrimary }]}>+ New Post</Text>
-              </Pressable>
-            </View>
-            <SortFilterBar
-              activeSort={sortOption}
-              activeFilter={filterStatus}
-              onSortChange={setSortOption}
-              onFilterChange={setFilterStatus}
-            />
-          </View>
+          <CategoryListHeader
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            activeSort={sortOption}
+            activeFilter={filterStatus}
+            onSortChange={setSortOption}
+            onFilterChange={setFilterStatus}
+            onAddPress={() => router.push({ pathname: '/create', params: { categoryId: id } })}
+            lastUpdated={lastUpdated}
+          />
         }
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
@@ -171,6 +186,11 @@ export default function CategoryScreen() {
             : styles.listContent
         }
       />
+      <Toast
+        message={toastMsg}
+        type={toastType}
+        onDismiss={() => setToastMsg(null)}
+      />
     </SafeAreaView>
   );
 }
@@ -178,14 +198,6 @@ export default function CategoryScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
-  listHeader: {
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    paddingBottom: 4,
-    alignItems: 'flex-end',
-  },
-  addButton: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20 },
-  addButtonText: { fontSize: 14, fontWeight: '700' },
   listContent: { paddingVertical: 10, width: '100%', maxWidth: 672, alignSelf: 'center' },
   listEmpty: { flexGrow: 1 },
   separator: { height: 10 },

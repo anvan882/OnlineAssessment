@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CategoryCard } from '@/components/CategoryCard';
+import { TrendingSection } from '@/components/TrendingSection';
 import { fetchCategories, type Category } from '@/src/lib/categories';
 import { useAppTheme } from '@/src/theme/ThemeContext';
 
@@ -121,6 +122,7 @@ export default function HomeScreen() {
             colors={[colors.primary]}
           />
         }
+        ListHeaderComponent={<TrendingSection />}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={[styles.emptyText, { color: colors.textMuted }]}>

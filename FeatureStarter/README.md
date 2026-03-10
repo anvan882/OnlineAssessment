@@ -1,50 +1,83 @@
-# Welcome to your Expo app 👋
+# FeatureStarter
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform feature request voting app built with React Native, Expo, and TypeScript. Users browse categories, view and create feature requests, and vote on them.
 
-## Get started
+## Prerequisites
 
-1. Install dependencies
+- [Node.js](https://nodejs.org/) (v18 or later)
+- npm (comes with Node.js)
+- For Android: [Android Studio](https://developer.android.com/studio) with an emulator configured
+- For iOS: Xcode (macOS only)
+- Or use [Expo Go](https://expo.dev/go) on a physical device
+
+## Installation
+
+1. Clone the repository
+
+   ```bash
+   git clone <your-repo-url>
+   cd FeatureStarter
+   ```
+
+2. Install dependencies
 
    ```bash
    npm install
    ```
 
-2. Start the app
+## Running the App
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Start the Expo development server:
 
 ```bash
-npm run reset-project
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Then choose a platform:
 
-## Learn more
+| Platform | Command | Notes |
+|----------|---------|-------|
+| Web | Press `w` in terminal | Opens in your browser |
+| Android | Press `a` in terminal | Requires Android emulator running |
+| iOS | Press `i` in terminal | Requires Xcode (macOS only) |
+| Expo Go | Scan QR code | On a physical device |
 
-To learn more about developing your project with Expo, look at the following resources:
+You can also start directly on a specific platform:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npm run web       # Start on web
+npm run android   # Start on Android emulator
+npm run ios       # Start on iOS simulator
+```
 
-## Join the community
+## Running Tests
 
-Join our community of developers creating universal apps.
+```bash
+npm test
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This runs the full test suite (101 tests across 14 test files) covering unit tests for business logic and component tests for UI.
+
+## Project Structure
+
+```
+app/                  # Screens (file-based routing via Expo Router)
+  index.tsx           # Home — browse categories
+  category/[id].tsx   # Category detail — feature list with sort/filter/search
+  feature/[id].tsx    # Feature detail — full info + voting
+  create.tsx          # Create feature request (modal)
+components/           # Reusable UI components
+src/
+  lib/                # Business logic, types, mock data
+  hooks/              # Custom hooks (useVoterId)
+  theme/              # Dark theme colors and context
+```
+
+## Tech Stack
+
+- **Framework:** React Native + Expo (managed workflow)
+- **Language:** TypeScript
+- **Navigation:** Expo Router (file-based)
+- **State:** React Context + hooks — Redux was intentionally avoided since the app only shares a theme and a voter ID globally; all other state is local to each screen. Context + hooks keeps the codebase simple with zero boilerplate. If the app scaled to many shared global states (e.g., cached feature lists, user profiles, notification counts), a lightweight library like Zustand or Redux Toolkit would help avoid prop drilling and unnecessary re-renders from Context updates.
+- **Storage:** AsyncStorage (native) / localStorage (web)
+- **Testing:** Jest + React Testing Library
